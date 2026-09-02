@@ -1,0 +1,35 @@
+import { useCallback, useEffect, useState } from "react";
+import { ArrowUpRight, Menu, X } from "lucide-react";
+import Home from "./components/sections/Home";
+import Work from "./components/sections/Work";
+import Tutorials from "./components/sections/Tutorials";
+import Pricing from "./components/sections/Pricing";
+import EditingProcess from "./components/sections/EditingProcess";
+import Contact from "./components/sections/Contact";
+import { BG, BG_ALT, INK, LINE, MUTED, ORANGE, ORANGE_LIGHT } from "./theme";
+
+const NAV_LINKS = [{ id: "home", label: "Home" }, { id: "work", label: "Work" }, { id: "tutorials", label: "Tutorials" }, { id: "pricing", label: "Pricing" }, { id: "contact", label: "Contact" }];
+
+function ScrollScrubber() {
+  const [pct, setPct] = useState(0);
+  useEffect(() => { const onScroll = () => { const root = document.documentElement; const height = root.scrollHeight - root.clientHeight; setPct(height > 0 ? (root.scrollTop / height) * 100 : 0); }; window.addEventListener("scroll", onScroll, { passive: true }); onScroll(); return () => window.removeEventListener("scroll", onScroll); }, []);
+  return <div className="fixed top-0 left-0 right-0 z-50" style={{ height: 2, background: "rgba(17,17,17,0.08)" }}><div style={{ height: "100%", width: `${pct}%`, background: `linear-gradient(90deg, ${ORANGE}, ${ORANGE_LIGHT})`, boxShadow: `0 0 10px ${ORANGE}`, transition: "width 0.1s linear" }} /></div>;
+}
+
+function Navbar({ active, scrollTo }) {
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => { const onScroll = () => setScrolled(window.scrollY > 24); window.addEventListener("scroll", onScroll, { passive: true }); onScroll(); return () => window.removeEventListener("scroll", onScroll); }, []);
+  return <><header className="fixed top-0 left-0 right-0 z-40 transition-all duration-500" style={{ backdropFilter: scrolled ? "blur(14px)" : "none", background: scrolled ? "rgba(255,255,255,0.75)" : "transparent", borderBottom: `1px solid ${scrolled ? LINE : "transparent"}` }}><div className="max-w-7xl mx-auto flex items-center justify-between px-6 md:px-10 py-5"><button onClick={() => scrollTo("home")} className="flex items-center gap-2 group"><img src="/icon.png" alt="hey.vyshu icon" width={20} height={20} style={{ objectFit: "contain" }} /><span className="text-lg font-bold tracking-tight text-black" style={{ fontFamily: '"SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', letterSpacing: "0.04em" }}>hey.vyshu<span style={{ color: ORANGE }}></span></span></button><nav className="hidden md:flex items-center gap-1">{NAV_LINKS.map((link) => <button key={link.id} onClick={() => scrollTo(link.id)} className="relative px-4 py-2 text-sm tracking-wide transition-colors duration-300" style={{ color: active === link.id ? "#111111" : MUTED }}>{link.label}<span className="absolute left-4 right-4 -bottom-0.5 transition-all duration-300" style={{ height: 1.5, background: ORANGE, transform: active === link.id ? "scaleX(1)" : "scaleX(0)", transformOrigin: "left" }} /></button>)}</nav><button onClick={() => scrollTo("contact")} className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-full transition-all duration-300 hover:gap-3" style={{ background: ORANGE, color: INK }}>Let&apos;s Talk<ArrowUpRight size={15} /></button><button className="md:hidden text-black" onClick={() => setOpen((value) => !value)} aria-label="Toggle menu">{open ? <X size={24} /> : <Menu size={24} />}</button></div></header><div className="fixed inset-0 z-30 md:hidden flex flex-col items-center justify-center gap-8 transition-all duration-400" style={{ background: "rgba(255,255,255,0.98)", opacity: open ? 1 : 0, pointerEvents: open ? "auto" : "none" }}>{NAV_LINKS.map((link) => <button key={link.id} onClick={() => { scrollTo(link.id); setOpen(false); }} className="text-3xl font-bold text-black" style={{ fontFamily: '"SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>{link.label}</button>)}</div></>;
+}
+
+function Footer({ scrollTo }) {
+  return <footer className="px-6 md:px-10 py-10" style={{ background: "#f4efea", borderTop: `1px solid ${LINE}` }}><div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4"><button onClick={() => scrollTo("home")} className="flex items-center gap-2"><img src="/icon.png" alt="hey.vyshu icon" width={16} height={16} style={{ objectFit: "contain" }} /><span className="text-sm font-semibold text-black" style={{ fontFamily: '"SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', letterSpacing: "0.04em" }}>hey.vyshu</span></button><p className="text-xs" style={{ color: MUTED }}>© {new Date().getFullYear()} — Video Editor & Motion Graphics Portfolio. All rights reserved.</p><button onClick={() => scrollTo("home")} className="text-xs tracking-widest uppercase transition-colors" style={{ color: MUTED }}>Back to top ↑</button></div></footer>;
+}
+
+export default function VideoEditorPortfolio() {
+  const [active, setActive] = useState("home");
+  const scrollTo = useCallback((id) => { document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }); setActive(id); }, []);
+  useEffect(() => { const observer = new IntersectionObserver((entries) => entries.forEach((entry) => entry.isIntersecting && setActive(entry.target.id)), { rootMargin: "-45% 0px -50% 0px", threshold: 0 }); NAV_LINKS.forEach(({ id }) => { const section = document.getElementById(id); if (section) observer.observe(section); }); return () => observer.disconnect(); }, []);
+  return <div style={{ background: `linear-gradient(180deg, ${BG} 0%, ${BG_ALT} 100%)`, fontFamily: '"SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }} className="min-h-screen w-full"><style>{`@keyframes riseIn { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } } @keyframes pulseDot { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:.4; transform:scale(1.4); } } @keyframes pulseRing { 0%,100% { box-shadow:0 0 0 0 rgba(17,17,17,.2); } 50% { box-shadow:0 0 0 14px rgba(17,17,17,0); } } @keyframes bounceY { 0%,100% { transform:translate(-50%,0); } 50% { transform:translate(-50%,8px); } } @keyframes eqbar { 0%,100% { height:15%; } 50% { height:100%; } } @keyframes marquee { from { transform:translateX(0); } to { transform:translateX(-50%); } } ::selection { background:${ORANGE}; color:${INK}; } button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible { outline:2px solid ${ORANGE}; outline-offset:2px; } @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; } }`}</style><ScrollScrubber /><Navbar active={active} scrollTo={scrollTo} /><Home scrollTo={scrollTo} /><Work /><Tutorials /><Pricing scrollTo={scrollTo} /><EditingProcess /><Contact /><Footer scrollTo={scrollTo} /></div>;
+}
