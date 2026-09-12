@@ -1,8 +1,16 @@
 import { useRef, useState } from "react";
 import { ArrowUpRight, Pause, Play } from "lucide-react";
 import { Eyebrow, Reveal } from "../Reveal";
-import { BG, BG_ALT, INK, LINE, MUTED, ORANGE, ORANGE_LIGHT, PANEL } from "../../theme";
-
+import {
+  BG,
+  BG_ALT,
+  INK,
+  LINE,
+  MUTED,
+  ORANGE,
+  ORANGE_LIGHT,
+  PANEL,
+} from "../../theme";
 
 // Add videos by filling in `videoUrl` (and optionally `poster`) below.
 // To add another video later, copy one object inside the relevant `videos` array.
@@ -10,19 +18,47 @@ const PORTFOLIO_SECTIONS = [
   {
     title: "Typography & MoGraphs",
     videos: [
-      { title: "Eenie Meenie edit", videoUrl: "/videos/bday.mp4", poster: "" },
-      { title: "Kita ke sana lyrical - (Scrap)", videoUrl: "/videos/kita.mp4", poster: "" },
-      { title: "Majboor edit", videoUrl: "/videos/majboor.mp4", poster: "" },
-      { title: "Earrings lyrical", videoUrl: "/videos/malcolm_lyrics.mp4", poster: "" },
+      {
+        title: "Eenie Meenie edit",
+        videoUrl: "/videos/bday.mp4",
+        poster: "",
+      },
+      {
+        title: "Kita ke sana lyrical - (Scrap)",
+        videoUrl: "/videos/kita.mp4",
+        poster: "",
+      },
+      {
+        title: "Majboor edit",
+        videoUrl: "/videos/majboor.mp4",
+        poster: "",
+      },
+      {
+        title: "Earrings lyrical",
+        videoUrl: "/videos/malcolm_lyrics.mp4",
+        poster: "",
+      },
     ],
   },
   {
     title: "Documentary",
-    videos: [{ title: "The 32-Year Coma Case", videoUrl: "/videos/final.mp4", poster: "" }],
+    videos: [
+      {
+        title: "The 32-Year Coma Case",
+        videoUrl: "/videos/final.mp4",
+        poster: "",
+      },
+    ],
   },
   {
     title: "SASS",
-    videos: [{ title: "What If Apple Made a Swiggy Ad?", videoUrl: "/videos/output.mp4", poster: "" }],
+    videos: [
+      {
+        title: "What If Apple Made a Swiggy Ad?",
+        videoUrl: "/videos/output.mp4",
+        poster: "",
+      },
+    ],
   },
 ];
 
@@ -60,13 +96,16 @@ function VideoCard({ video, index, isPlaying, onPlay, onPause }) {
           {hasVideo ? (
             <video
               ref={videoRef}
-              className="h-full w-full object-cover transition-transform duration-700"
-              style={{ transform: isPlaying ? "scale(1.035)" : "scale(1)" }}
+              className="h-full w-full object-contain transition-transform duration-700"
+              style={{
+                transform: isPlaying ? "scale(1.035)" : "scale(1)",
+              }}
               controls
               controlsList="nodownload"
-              onContextMenu={(event) => event.preventDefault()}
+              playsInline
               preload="metadata"
               poster={video.poster || undefined}
+              onContextMenu={(event) => event.preventDefault()}
               onPlay={() => onPlay(video.title, videoRef.current)}
               onPause={() => onPause(video.title)}
               onEnded={() => onPause(video.title)}
@@ -110,7 +149,11 @@ function VideoCard({ video, index, isPlaying, onPlay, onPause }) {
                   boxShadow: `0 8px 30px ${ORANGE}55`,
                 }}
                 onClick={togglePlayback}
-                aria-label={isPlaying ? `Pause ${video.title}` : `Play ${video.title}`}
+                aria-label={
+                  isPlaying
+                    ? `Pause ${video.title}`
+                    : `Play ${video.title}`
+                }
                 aria-pressed={isPlaying}
               >
                 {isPlaying ? (
@@ -141,20 +184,35 @@ function VideoCard({ video, index, isPlaying, onPlay, onPause }) {
             >
               VIDEO / {String(index + 1).padStart(2, "0")}
             </span>
-            <span className="flex items-center gap-1.5 font-mono text-[10px] tracking-widest uppercase" style={{ color: isPlaying ? ORANGE : MUTED }}>
-              <span className="h-1.5 w-1.5 rounded-full" style={{ background: isPlaying ? ORANGE : MUTED }} />
+
+            <span
+              className="flex items-center gap-1.5 font-mono text-[10px] tracking-widest uppercase"
+              style={{ color: isPlaying ? ORANGE : MUTED }}
+            >
+              <span
+                className="h-1.5 w-1.5 rounded-full"
+                style={{
+                  background: isPlaying ? ORANGE : MUTED,
+                }}
+              />
+
               {isPlaying ? "Playing" : "Ready"}
             </span>
           </div>
 
           <div className="flex items-center justify-between gap-3">
-            <h3 className="text-lg font-semibold text-black">{video.title}</h3>
+            <h3 className="text-lg font-semibold text-black">
+              {video.title}
+            </h3>
+
             <ArrowUpRight
               size={18}
               className="transition-all duration-300"
               style={{
                 color: ORANGE,
-                transform: hover ? "translate(2px,-2px)" : "translate(0,0)",
+                transform: hover
+                  ? "translate(2px,-2px)"
+                  : "translate(0,0)",
                 opacity: hover ? 1 : 0.4,
               }}
             />
@@ -170,7 +228,10 @@ export default function Work() {
   const activeVideoRef = useRef(null);
 
   const handlePlay = (videoId, videoElement) => {
-    if (activeVideoRef.current && activeVideoRef.current !== videoElement) {
+    if (
+      activeVideoRef.current &&
+      activeVideoRef.current !== videoElement
+    ) {
       activeVideoRef.current.pause();
     }
 
@@ -186,87 +247,130 @@ export default function Work() {
   };
 
   return (
-    <section
-      id="work"
-      className="relative px-6 py-28 md:px-10 md:py-36"
-      style={{
-        background: `linear-gradient(180deg, ${BG} 0%, ${BG_ALT} 48%, ${BG} 100%)`,
-        scrollMarginTop: 72,
-      }}
-    >
-      <div className="mx-auto max-w-7xl">
-        <Reveal>
-          <Eyebrow code="00:01" text="Selected Work" />
+    <>
+      {/* Preserve the original aspect ratio when a video enters fullscreen */}
+      <style>{`
+        video:fullscreen {
+          width: 100vw !important;
+          height: 100vh !important;
+          max-width: 100vw !important;
+          max-height: 100vh !important;
+          object-fit: contain !important;
+          object-position: center !important;
+          background: #000 !important;
+        }
 
-          <h2
-            className="mb-4 text-black font-bold leading-none"
-            style={{
-              fontFamily: '"SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-              fontSize: "clamp(2.5rem, 7vw, 5.5rem)",
-            }}
-          >
-            WORK
-          </h2>
+        video:-webkit-full-screen {
+          width: 100vw !important;
+          height: 100vh !important;
+          max-width: 100vw !important;
+          max-height: 100vh !important;
+          object-fit: contain !important;
+          object-position: center !important;
+          background: #000 !important;
+        }
+      `}</style>
 
-          <p className="mb-16 max-w-xl" style={{ color: MUTED }}>
-            A collection of recent edits spanning cinematic pieces, brand ads,
-            and social-first content.
-          </p>
-        </Reveal>
+      <section
+        id="work"
+        className="relative px-6 py-28 md:px-10 md:py-36"
+        style={{
+          background: `linear-gradient(180deg, ${BG} 0%, ${BG_ALT} 48%, ${BG} 100%)`,
+          scrollMarginTop: 72,
+        }}
+      >
+        <div className="mx-auto max-w-7xl">
+          <Reveal>
+            <Eyebrow code="00:01" text="Selected Work" />
 
-        <div className="space-y-20">
-          {PORTFOLIO_SECTIONS.map((section, sectionIndex) => (
-            <div key={section.title}>
-              {sectionIndex > 0 && (
-                <div
-                  className="mb-10 flex items-center gap-4"
-                  aria-hidden="true"
-                >
-                  <span
-                    className="h-px flex-1"
-                    style={{ background: `linear-gradient(90deg, transparent, ${LINE})` }}
-                  />
-                  <span
-                    className="font-mono text-[10px] tracking-[0.25em]"
-                    style={{ color: ORANGE_LIGHT }}
-                  >
-                    {String(sectionIndex).padStart(2, "0")}
-                  </span>
-                  <span
-                    className="h-px flex-1"
-                    style={{ background: `linear-gradient(90deg, ${LINE}, transparent)` }}
-                  />
+            <h2
+              className="mb-4 text-black font-bold leading-none"
+              style={{
+                fontFamily:
+                  '"SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+                fontSize: "clamp(2.5rem, 7vw, 5.5rem)",
+              }}
+            >
+              WORK
+            </h2>
+
+            <p
+              className="mb-16 max-w-xl"
+              style={{ color: MUTED }}
+            >
+              A collection of recent edits spanning cinematic pieces,
+              brand ads, and social-first content.
+            </p>
+          </Reveal>
+
+          <div className="space-y-20">
+            {PORTFOLIO_SECTIONS.map(
+              (section, sectionIndex) => (
+                <div key={section.title}>
+                  {sectionIndex > 0 && (
+                    <div
+                      className="mb-10 flex items-center gap-4"
+                      aria-hidden="true"
+                    >
+                      <span
+                        className="h-px flex-1"
+                        style={{
+                          background: `linear-gradient(90deg, transparent, ${LINE})`,
+                        }}
+                      />
+
+                      <span
+                        className="font-mono text-[10px] tracking-[0.25em]"
+                        style={{ color: ORANGE_LIGHT }}
+                      >
+                        {String(sectionIndex).padStart(2, "0")}
+                      </span>
+
+                      <span
+                        className="h-px flex-1"
+                        style={{
+                          background: `linear-gradient(90deg, ${LINE}, transparent)`,
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  <Reveal>
+                    <h3
+                      className="mb-8 text-black font-bold leading-none"
+                      style={{
+                        fontFamily:
+                          '"SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+                        fontSize:
+                          "clamp(2rem, 4vw, 3.5rem)",
+                      }}
+                    >
+                      {section.title}
+                    </h3>
+                  </Reveal>
+
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {section.videos.map(
+                      (video, index) => (
+                        <VideoCard
+                          key={video.title}
+                          video={video}
+                          index={index}
+                          isPlaying={
+                            playingVideo === video.title
+                          }
+                          onPlay={handlePlay}
+                          onPause={handlePause}
+                        />
+                      )
+                    )}
+                  </div>
                 </div>
-              )}
-
-              <Reveal>
-                <h3
-                  className="mb-8 text-black font-bold leading-none"
-                  style={{
-                    fontFamily: '"SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-                    fontSize: "clamp(2rem, 4vw, 3.5rem)",
-                  }}
-                >
-                  {section.title}
-                </h3>
-              </Reveal>
-
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {section.videos.map((video, index) => (
-                  <VideoCard
-                    key={video.title}
-                    video={video}
-                    index={index}
-                    isPlaying={playingVideo === video.title}
-                    onPlay={handlePlay}
-                    onPause={handlePause}
-                  />
-                ))}
-              </div>
-            </div>
-          ))}
+              )
+            )}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
